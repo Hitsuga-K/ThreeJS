@@ -3,17 +3,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="./style.css">
     <title>3d</title>
 </head>
 <body>
-    <script type="importmap">
+    <!-- CDN LINKS -->
+    <!-- <script type="importmap">
     {
         "imports": {
         "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
         "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
         }
     }
+    </script>  для работы threeJS-->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "./node_modules/three/build/three.module.js",
+                "three/addons/": "./node_modules/three/examples/jsm/"
+            }
+        }
     </script>
     <script type="module" src="./src/main.js"></script>
+    
 </body>
 </html>

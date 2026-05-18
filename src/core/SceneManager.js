@@ -11,7 +11,7 @@ export class SceneManager {
         if (SCENE_CONFIG.fog.enable) {
             this.scene.fog = new THREE.FogExp2(SCENE_CONFIG.fog.color, SCENE_CONFIG.fog.density);
         }
-        return this.scene;
+                                                                                                                                                                                                                                                                                                                                                                                                                       return this.scene;
     }
 
     getScene(){
