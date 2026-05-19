@@ -2,7 +2,7 @@ export const LIGHT_CONFIG = {
     // основной свет
     main: {
         type: 'directional',
-        color: 0xCA0533,
+        color: 0xffffff,
         intensity: 1.2,
         position: {x: 1, y: 1, z: 1},
         castShadow: true,
@@ -11,7 +11,7 @@ export const LIGHT_CONFIG = {
     // направленный свет - лучи
     ambient: {
         type: 'directional',
-        color: 0xFB0442,
+        color: 0xffffff,
         intensity: 0.8,
         position: {x: 0, y: 1, z: -5},
         castShadow: true,
@@ -20,7 +20,7 @@ export const LIGHT_CONFIG = {
     // источник контрового цвета - свет сзади камеры
     rim: {
         type: 'directional',
-        color: 0xFC3164,
+        color: 0xffffff,
         intensity: 0.7,
         position: {x: 0, y: -2, z: 0},
         castShadow: true,
@@ -29,7 +29,7 @@ export const LIGHT_CONFIG = {
     // нижний свет - заполняющий
     fill: {
         type: 'point',
-        color: 0xFD5E86,
+        color: 0xffffff,
         intensity: 0.6,
         position: {x: 0, y: -2, z: 0},
         castShadow: true,
@@ -38,7 +38,7 @@ export const LIGHT_CONFIG = {
     // подсветка
     back: {
         type: 'point',
-        color: 0xFEB9CA,
+        color: 0xffffff,
         intensity: 0.5,
         position: {x: 0, y: 1, z: -5},
         castShadow: true,

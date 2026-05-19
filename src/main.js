@@ -5,7 +5,9 @@ import {LightManager} from './core/LightManager.js';
 import {Settings} from './utils/Settings.js';
 import {ShipGenerator} from './utils/Shipgenerator.js';
 import {SkySettings} from './utils/SkySetting.js';
+import {TextureLoader} from './core/TextureLOader.js';
 import {ModelLoad} from './core/ModelLoad.js';
+import {TEXTURE_CONFIG} from './config/texture.js';
 
 
 class Main{
@@ -47,7 +49,6 @@ class Main{
         cone.position.x = 2; 
         
         this.modelLoad = new ModelLoad(scene);
-        this.modelLoad.load();
 
         // Здесь можно указать путь к модели, если она у вас есть
         // this.modelLoad.load('./models/my_model.glb');

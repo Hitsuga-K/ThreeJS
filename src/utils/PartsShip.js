@@ -1,15 +1,20 @@
 import * as THREE from 'three';
+import { TextureLoader } from '../core/TextureLOader.js';
 
-export class PartsShip{
-    constructor(){
-        this.ship = null;
-    }
+export class PartsShip {
+  constructor() {
+    this.textureLoader = new TextureLoader();
+  }
 
-    createCabin(){
-        const sprite = new THREE.Sprite( new THREE.TextureLoader().load( '../../textures/kryto.png' ) );
-        const geometry = new THREE.CylinderGeometry( 1, 1, 0.5, 20 );
-        const material = new THREE.PointsMaterial( { size: 35, sizeAttenuation: true, map: sprite, alphaTest: 0.5, transparent: true } );
-        this.cabin = new THREE.Mesh( geometry, material ); 
-        return this.cabin;
-    }
+  createCabin() {
+    const texture = this.textureLoader.load('tex');
+    const geometry = new THREE.CylinderGeometry(1, 1, 0.5, 20);
+    const material = new THREE.MeshStandardMaterial({
+      map: texture,
+      roughness: 0.5,
+      metalness: 0.5
+    });
+    const cabin = new THREE.Mesh(geometry, material);
+    return cabin;
+  }
 }
