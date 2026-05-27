@@ -1,98 +1,145 @@
 import * as THREE from 'three';
-import {SceneManager} from './core/SceneManager.js';
-import {CameraManager} from './core/CameraManager.js';
-import {LightManager} from './core/LightManager.js';
-import {Settings} from './utils/Settings.js';
-import {ShipGenerator} from './utils/Shipgenerator.js';
-import {SkySettings} from './utils/SkySetting.js';
-import {TextureLoader} from './core/TextureLOader.js';
-import {ModelLoad} from './core/ModelLoad.js';
-import {TEXTURE_CONFIG} from './config/texture.js';
+import {SceneManager} from "./core/SceneManager.js";
+import {CameraManager} from "./core/CameraManager.js";
+import {LightManager} from "./core/LightManager.js";
+import {Settings} from "./utils/Settings.js"
+import {ShipGenerator} from "./utils/ShipGenerator.js"
+import {SkySettings} from "./utils/SkySettings.js"
+import {ModelLoader} from "./core/ModelLoader.js"
+import { PaneConstructor } from './utils/PaneConstructor.js';
+import {Ship} from './entities/Ship.js';
 
 
 class Main{
     constructor(){
         this.sceneManager = null;
         this.cameraManager = null;
-        this.renderer = null;
-        this.camera = null;
         this.lightManager = null;
         this.settings = null;
-        this.cube = null;
-        this.time = 0;
-        this.init();
-        this.shipGenerator = null;
+        this.renderer = null;
+        this.camera = null;
+        
         this.skySettings = null;
-        this.modelLoad = null;
+        this.shipGenerator = null;
+        this.modelLoader = null;
+        
+        this.clock = null;
+        this.model = null;
+
+        this.ship = null;
+
+        this.asteroid = null;
+
+        this.paneConstructor = null;
+
+
+        this.cruiser = new Ship();
+
+        this.init()
     }
+    
     init(){
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.enable = true;
         this.renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(this.renderer.domElement);
 
-        this.sceneManager = new SceneManager(this.renderer.domElement);
+        this.sceneManager = new SceneManager();
         const scene = this.sceneManager.create();
 
-        this.skySettings = new SkySettings(scene);
-        this.skySettings.createStarts();
+
+        this.cruiser = new Ship(scene);
+
+        this.cameraManager = new CameraManager(this.renderer.domElement);
+        this.cameraManager.create();
+        this.cameraManager.createFlyControls();
+        //this.cameraManager.createOrbitControls();
+
+        this.lightManager = new LightManager(scene);
+        this.lightManager.createAll();
 
         this.settings = new Settings(scene);
         this.settings.createAllHelpers();
-        this.cube = this.settings._createCubeMesh(); 
-
-        const geometry1 = new THREE.ConeGeometry( 1, 0.5, 30 );
-        const material1 = new THREE.MeshStandardMaterial({ color: 0xff0000, roughness: 0.5, metalness: 0.5});
-        const cone = new THREE.Mesh(geometry1, material1 );
-        scene.add( cone );
-        cone.position.x = 2; 
+        this.settings.createAllMeshes();
         
-        this.modelLoad = new ModelLoad(scene);
-
-        // Здесь можно указать путь к модели, если она у вас есть
-        // this.modelLoad.load('./models/my_model.glb');
-
-
-
-        this.cameraManager = new CameraManager(this.renderer.domElement);
-        const camera = this.cameraManager.create();
-        this.cameraManager.createControls();
-        camera.position.set(5, 8, 10);
+        this.skySettings = new SkySettings(scene);
+        this.skySettings.createStars();
         
-        this.lightManager = new LightManager(scene);
-        this.lightManager.creatAll();
         this.shipGenerator = new ShipGenerator(scene);
-        this.shipGenerator.init();
-        this.shipGenerator.createShip('scout');
+        //this.shipGenerator.createShip('scout');
+        //this.model = this.shipGenerator.ship
+        
+        this.modelLoader = new ModelLoader(scene);
+        this.modelLoader.load(0);
 
-               this.animate();
+        this.paneConstructor = new PaneConstructor(scene);
+
+        setTimeout(()=> {
+            this.ship = this.modelLoader.model
+            this.modelLoader.model = null;
+
+            this.cruiser = new Ship(scene);
+        }, 500)
+
+        setTimeout(()=> {
+            this.modelLoader.load(3);
+        }, 1000)     
+
+        setTimeout(()=> {
+            this.asteroid = this.modelLoader.model
+            this.asteroid.position.x = 5;
+        }, 4000)   
+
+        this.clock = new THREE.Clock();
+
+
+        //setTimeout(() => {this.model = this.modelLoader.model; this.model.name = 'Model';this.paneConstructor.addAllPanels(this.model);}, 500);
+        
         window.addEventListener('resize', () => this.onWindowResize());
+
+        this.animate();
     }
+
+    
     onWindowResize(){
         this.cameraManager.onWindowResize();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
+    
     animate(){
         requestAnimationFrame(() => this.animate());
-        this.time += 0.016;
 
-        if (this.cameraManager.controls) {
-            this.cameraManager.controls.update();
+        const delta = this.clock.getDelta();
+        
+        this.cameraManager.update(delta);
+        
+        const camera = this.cameraManager.getCamera();
+
+        if(this.ship && camera){
+            this.ship.position.copy(camera.position);
+            this.ship.position.x = 0;
+            this.ship.position.y -= 10;
+            this.ship.position.z = 5;
+
+            this.ship.rotation.x = camera.rotation.x;
+            this.ship.rotation.x = camera.rotation.y + 120;
+            this.ship.rotation.x = camera.rotation.z + 90;
         }
 
-        // Вращаем один куб
-        if (this.cube) {
-            this.cube.rotation.x += 0.01;
-            this.cube.rotation.y += 0.01;
+        if(this.asteroid && this.ship){  // есть ли астероид и корабль, если есть проверяем дистанцию
+            if(this.ship.position.distanceTo(this.asteroid.position) < 1){ 
+                this.sceneManager.scene.remove(this.asteroid);
+                this.asteroid = null;
+            }
         }
 
         this.renderer.render(
             this.sceneManager.getScene(),
-            this.cameraManager.getCamera()
-        );
+            this.cameraManager.getCamera(),
+            this.camera = this.cameraManager.getCamera()
+        )
     }
 }
 
 const game = new Main();
-game.animate();
